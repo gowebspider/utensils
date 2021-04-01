@@ -34,7 +34,7 @@ func main() {
  
 -[ ] Proxy access
 
--[] more...
+-[ ] more...
 
 ## Contact me
 

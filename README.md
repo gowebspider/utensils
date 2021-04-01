@@ -27,14 +27,8 @@ func main() {
 ```
 ## TODO
 -[x] Auto Encode
- 
 -[x] fake user Agent
- 
 -[x] simple pc requests
- 
--[ ] Proxy access
-
--[ ] more...
 
 ## Contact me
 

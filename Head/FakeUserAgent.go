@@ -6,21 +6,38 @@ import (
 	"net/http"
 )
 
+// SetRandomPcUserAgent is Set pc fake user agent func,
+// Receive *http.Request pointer when in use
 func SetRandomPcUserAgent(r *http.Request) {
 	r.Header.Set(`User-Agent`, constructionPcUserAgent[rand.Intn(len(constructionPcUserAgent))]())
 }
+
+// SetRandomMobileUserAgent is Set Mobile fake user agent func,
+// Receive *http.Request pointer when in use
 func SetRandomMobileUserAgent(r *http.Request) {
 	r.Header.Set(`User-Agent`, constructionMobileUserAgent[rand.Intn(len(constructionMobileUserAgent))]())
 }
+
+// SetRandomAllUserAgent is Set all fake user agent func,
+// Receive *http.Request pointer when in use
 func SetRandomAllUserAgent(r *http.Request) {
 	r.Header.Set(`User-Agent`, constructionAllUserAgent()[rand.Intn(len(constructionAllUserAgent()))]())
 }
+
+// RandomPcUserAgent is Get pc fake user agent func,
+// Receive *http.Request pointer when in use
 func RandomPcUserAgent() string {
 	return constructionPcUserAgent[rand.Intn(len(constructionPcUserAgent))]()
 }
+
+// RandomMobileUserAgent is Get Mobile fake user agent func,
+// Receive *http.Request pointer when in use
 func RandomMobileUserAgent() string {
 	return constructionMobileUserAgent[rand.Intn(len(constructionMobileUserAgent))]()
 }
+
+// RandomAllUserAgent is Get all fake user agent func,
+// Receive *http.Request pointer when in use
 func RandomAllUserAgent() string {
 	return constructionAllUserAgent()[rand.Intn(len(constructionAllUserAgent()))]()
 }

@@ -10,10 +10,10 @@ import (
 	"net/http"
 )
 
-// SimpleFetch is Network requester, It relies on net / HTTP packets to send network requests
+// SimplePcFetch SimpleFetch is Network requester, It relies on net / HTTP packets to send network requests
 // * fake User Agent
 // * AutoEncode
-func SimplePcFetch(method, url string, params map[string]string) ([]byte, error) {
+func SimplePcFetch(method, url string) ([]byte, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {

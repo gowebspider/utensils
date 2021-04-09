@@ -67,3 +67,5 @@ func BenchmarkGroup10(b *testing.B)  { benchmarkRandomUserAgent(b, 10) }
 func BenchmarkGroup20(b *testing.B)  { benchmarkRandomUserAgent(b, 20) }
 func BenchmarkGroup50(b *testing.B)  { benchmarkRandomUserAgent(b, 50) }
 func BenchmarkGroup100(b *testing.B) { benchmarkRandomUserAgent(b, 100) }
+
+//https://github.com/gowebspider/utensils.git

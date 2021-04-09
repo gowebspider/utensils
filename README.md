@@ -1,40 +1,48 @@
 # utensils
 
 ## Demand
+
 must
+
 - go version >= 1.10
 
 ## Install
+
 ```bash
 go get -u github.com/gowebspider/utensils/...
 ```
 
 ## Example
+
 ```go
 package main
 
 import (
 	"fmt"
-	"github.com/Golzaes/awesomeCrawlerTools/Head"
+	"github.com/gowebspider/utensils/Head"
 )
 
 func main() {
-	fmt.Println(Head.RandomUserAgent())
+	fmt.Println(Head.RandomMobileUserAgent())
 	// output
-	// Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US) AppleWebKit/532.9 (KHTML, like Gecko) Chrome/5.0.310.0 Safari/532.9
+	//Mozilla/5.0 (Linux; Android 9; Nexus 10 Build/NOF27C) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/534.30
 }
 
+
 ```
+
 ## TODO
+
 -[x] Auto Encode
- 
+
 -[x] fake user Agent
- 
+
 -[x] simple pc requests
 
 -[ ] Proxy access
 
 -[ ] more...
+
 ## Contact me
 
 e-mail: wuzhipeng1289690157@mail.com
@@ -46,4 +54,5 @@ Personal website: blogs-payne.github.io
 other: 公众号：积跬Coder
 
 ## Other
-Welcome star or PR, thank you
+
+Welcome to issue star or PR, thank you

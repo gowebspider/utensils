@@ -48,6 +48,7 @@ func BenchmarkRandomUserAgent(b *testing.B) {
 		fmt.Println(RandomPcUserAgent())
 		fmt.Println(RandomAllUserAgent())
 		fmt.Println(RandomMobileUserAgent())
+
 	}
 }
 

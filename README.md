@@ -33,15 +33,30 @@ func main() {
 
 ## TODO
 
--[x] Auto Encode
+[comment]: <> (-[x] Auto Encode)
 
--[x] fake user Agent
+[comment]: <> (-[x] fake user Agent)
 
+[comment]: <> (-[x] simple pc requests)
+
+[comment]: <> (-[ ] Proxy access)
+
+[comment]: <> (-[ ] more...)
+
+-[x] fake userAgent 
+ 
 -[x] simple pc requests
 
--[ ] Proxy access
+-[ ] proxyRequests
 
--[ ] more...
+-[ ] Async Requester
+
+-[ ] url parse
+
+-[ ] goroutine work pool
+
+-[ ] ...
+
 
 ## Contact me
 

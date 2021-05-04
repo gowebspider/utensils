@@ -43,19 +43,19 @@ func main() {
 
 [comment]: <> (-[ ] more...)
 
--[x] fake userAgent 
+- [x] fake userAgent 
  
--[x] simple pc requests
+- [x] simple pc requests
 
--[ ] proxyRequests
+- [ ] proxyRequests
 
--[ ] Async Requester
+- [ ] Async Requester
 
--[ ] url parse
+- [ ] url parse
 
--[ ] goroutine work pool
+- [ ] goroutine work pool
 
--[ ] ...
+- [ ] ...
 
 
 ## Contact me

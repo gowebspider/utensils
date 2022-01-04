@@ -84,6 +84,7 @@ func DetectionEncode(r *bufio.Reader) encoding.Encoding {
 	return e
 }
 
+//NewReqArgs Initialize
 func NewReqArgs(method string, url string, header map[string]string, data map[string]string) *ReqArgs {
 	return &ReqArgs{
 		method: method,
@@ -93,6 +94,7 @@ func NewReqArgs(method string, url string, header map[string]string, data map[st
 	}
 }
 
+// SimpleScrape based on net/http Client Encapsulation to requests
 func (a *ReqArgs) SimpleScrape() ([]byte, error) {
 	//Initialize client
 	client := &http.Client{}

@@ -1,46 +1,32 @@
 package Requester
 
 import (
+	"bufio"
 	"bytes"
+	"fmt"
 	"github.com/gowebspider/utensils/Head"
 	"github.com/saintfish/chardet"
-	"github.com/wonderivan/logger"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/html/charset"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/unicode"
 	"io"
 	"io/ioutil"
+	"log"
+	"mime/multipart"
 	"net/http"
 	"strings"
 )
 
-// SimplePcFetch SimpleFetch is Network requester, It relies on net / HTTP packets to send network requests
-// * fake User Agent
-// * AutoEncode
-//func SimplePcFetch(method, url string, body io.Reader) ([]byte, error) {
-//	client := &http.Client{}
-//	req, err := http.NewRequest(method, url, body)
-//	if err != nil {
-//		return nil, fmt.Errorf(`NewRequest Error:%#v`, err)
-//	}
-//	Head.SetRandomPcUserAgent(req)
-//	res, err := client.Do(req)
-//	if err != nil {
-//		return nil, fmt.Errorf(` Client Error:%#v`, err)
-//	}
-//	defer res.Body.Close()
-//	if res.StatusCode != http.StatusOK {
-//		return nil, fmt.Errorf(` Get invalid status code %s while scraping %s`, res.Status, url)
-//	}
-//	// Detection encode，eg: UTF8 GBK...
-//	bodyReader := bufio.NewReader(res.Body)
-//	PageEncode := Encoder.DetectionEncode(bodyReader)
-//	// recoding
-//	encodedReader := transform.NewReader(bodyReader, PageEncode.NewDecoder())
-//	return ioutil.ReadAll(encodedReader)
-//}
+type ReqArgs struct {
+	method, url  string
+	header, data map[string]string
+}
+
 func fixCharset(r *http.Response, detectCharset bool, defaultEncoding string) ([]byte, error) {
 	Body, err := io.ReadAll(r.Body)
 	if err != nil {
-		logger.Error(`ReadAll Error %v`, err)
+		logrus.Errorf(`ReadAll Error %v`, err)
 	}
 	if defaultEncoding != "" {
 		tmpBody, err := encodeBytes(Body, "text/plain; charset="+defaultEncoding)
@@ -48,7 +34,7 @@ func fixCharset(r *http.Response, detectCharset bool, defaultEncoding string) ([
 			return nil, nil
 		}
 		Body = tmpBody
-		logger.Error(`defaultEncoding  Error %v`, err)
+		logrus.Errorf(`defaultEncoding  Error %v`, err)
 	}
 	contentType := strings.ToLower(r.Header.Get("Content-Type"))
 
@@ -58,22 +44,22 @@ func fixCharset(r *http.Response, detectCharset bool, defaultEncoding string) ([
 		strings.Contains(contentType, "font/") {
 		// These MIME types should not have textual data.
 
-		logger.Error(`strings.Contains  Error %v`, err)
+		logrus.Errorf(`strings.Contains  Error %v`, err)
 	}
 
 	if !strings.Contains(contentType, "charset") {
 		if !detectCharset {
-			logger.Error(`!strings.Contains  Error %v`, err)
+			logrus.Errorf(`!strings.Contains  Error %v`, err)
 		}
 		d := chardet.NewTextDetector()
 		r, err := d.DetectBest(Body)
 		if err != nil {
-			logger.Error(`DetectBest  Error %v`, err)
+			logrus.Errorf(`DetectBest  Error %v`, err)
 		}
 		contentType = "text/plain; charset=" + r.Charset
 	}
 	if strings.Contains(contentType, "utf-8") || strings.Contains(contentType, "utf8") {
-		logger.Warn(`strings.Contains  not is utf8 %v`, err)
+		logrus.Warnf(`strings.Contains  not is utf8 %v`, err)
 	}
 	return encodeBytes(Body, contentType)
 }
@@ -81,22 +67,71 @@ func fixCharset(r *http.Response, detectCharset bool, defaultEncoding string) ([
 func encodeBytes(b []byte, contentType string) ([]byte, error) {
 	r, err := charset.NewReader(bytes.NewReader(b), contentType)
 	if err != nil {
-		logger.Error(`charset.NewReader %v`, err)
+		logrus.Errorf(`charset.NewReader %v`, err)
 	}
 	return ioutil.ReadAll(r)
 }
 
-func SimplePcFetch(method, url string, body io.Reader) ([]byte, error) {
-	client := &http.Client{}
-	req, err := http.NewRequest(method, url, body)
+// DetectionEncode is a Code detector
+// It will read 1024 bytes to implement coding detection
+func DetectionEncode(r *bufio.Reader) encoding.Encoding {
+	bytes, err := r.Peek(1024)
 	if err != nil {
-		logger.Error(`http.NewRequest Err %v`, err)
+		log.Printf(`DetectionEncode Error:%#v`, err)
+		return unicode.UTF8
 	}
-	Head.SetRandomPcUserAgent(req)
+	e, _, _ := charset.DetermineEncoding(bytes, "")
+	return e
+}
+
+func NewReqArgs(method string, url string, header map[string]string, data map[string]string) *ReqArgs {
+	return &ReqArgs{
+		method: method,
+		url:    url,
+		header: header,
+		data:   data,
+	}
+}
+
+func (a *ReqArgs) SimpleScrape() ([]byte, error) {
+	//Initialize client
+	client := &http.Client{}
+
+	// set payload
+	payload := &bytes.Buffer{}
+	writer := multipart.NewWriter(payload)
+	for fieldname, value := range a.data {
+		_ = writer.WriteField(fieldname, value)
+	}
+	err := writer.Close()
+
+	// Construct request line
+	req, err := http.NewRequest(a.method, a.url, payload)
+	if err != nil {
+		fmt.Println(err)
+		return nil, nil
+	}
+
+	// set header
+	for k, v := range a.header {
+		req.Header.Add(k, v)
+	}
+	// set Random UserAgent
+	req.Header.Set(`userAgent`, Head.RandomAllUserAgent())
+
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
 	res, err := client.Do(req)
 	if err != nil {
-		logger.Error(`client.Do Err %v`, err)
+		fmt.Println(err)
+		return nil, nil
 	}
+	if res.StatusCode != 200 {
+		logrus.Warnf(`response StatusCode not is 200 !!!, response StatusCode:%d`, res.StatusCode)
+	}
+
 	defer res.Body.Close()
+
+	//return fixCharset(res, true, ``)
 	return fixCharset(res, true, ``)
 }

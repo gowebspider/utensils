@@ -3,7 +3,6 @@ package Requester
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"github.com/gowebspider/utensils/Head"
 	"github.com/saintfish/chardet"
 	"github.com/sirupsen/logrus"
@@ -75,17 +74,17 @@ func encodeBytes(b []byte, contentType string) ([]byte, error) {
 // DetectionEncode is a Code detector
 // It will read 1024 bytes to implement coding detection
 func DetectionEncode(r *bufio.Reader) encoding.Encoding {
-	bytes, err := r.Peek(1024)
+	peek, err := r.Peek(1024)
 	if err != nil {
 		log.Printf(`DetectionEncode Error:%#v`, err)
 		return unicode.UTF8
 	}
-	e, _, _ := charset.DetermineEncoding(bytes, "")
+	e, _, _ := charset.DetermineEncoding(peek, "")
 	return e
 }
 
 //NewReqArgs Initialize
-func NewReqArgs(method string, url string, header map[string]string, data map[string]string) *ReqArgs {
+func NewReqArgs(method, url string, header, data map[string]string) *ReqArgs {
 	return &ReqArgs{
 		method: method,
 		url:    url,
@@ -95,27 +94,27 @@ func NewReqArgs(method string, url string, header map[string]string, data map[st
 }
 
 // SimpleScrape based on net/http Client Encapsulation to requests
-func (a *ReqArgs) SimpleScrape() ([]byte, error) {
+func (r *ReqArgs) SimpleScrape() ([]byte, error) {
 	//Initialize client
 	client := &http.Client{}
 
 	// set payload
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
-	for fieldname, value := range a.data {
+	for fieldname, value := range r.data {
 		_ = writer.WriteField(fieldname, value)
 	}
 	err := writer.Close()
 
 	// Construct request line
-	req, err := http.NewRequest(a.method, a.url, payload)
+	req, err := http.NewRequest(r.method, r.url, payload)
 	if err != nil {
-		fmt.Println(err)
+		logrus.Warnln(err)
 		return nil, nil
 	}
 
 	// set header
-	for k, v := range a.header {
+	for k, v := range r.header {
 		req.Header.Add(k, v)
 	}
 	// set Random UserAgent
@@ -125,7 +124,7 @@ func (a *ReqArgs) SimpleScrape() ([]byte, error) {
 
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		logrus.Warnln(err)
 		return nil, nil
 	}
 	if res.StatusCode != 200 {

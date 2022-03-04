@@ -10,7 +10,6 @@ jobs:
       max-parallel: 4
       matrix:
         go-version: [
-            1.18,
             1.17,
             1.16,
             1.15,

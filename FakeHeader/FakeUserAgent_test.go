@@ -1,4 +1,4 @@
-package Head
+package FakeHeader
 
 import (
 	"fmt"

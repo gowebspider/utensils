@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 git add -A
 git commit -am "`date +'%Y%m%d%H%M%S'`"
-git tag -a "`date +'%Y%m%d%H%M%S'`" -m "Release `date +'%Y%m%d%H%M%S'`"
-git push origin --tags
+git push -u origin
+#git tag -a "`date +'%Y%m%d%H%M%S'`" -m "Release `date +'%Y%m%d%H%M%S'`"
+#git push origin --tags
